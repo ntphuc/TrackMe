@@ -44,7 +44,7 @@
     <string name="speed_unit_kilometers_per_hour">km/h</string>
     <string name="time_unit_days">d</string>
 
-    <string name="workout_id">ID = %1$d</string>
+    <string name="workout_id">WorkoutID = %1$d</string>
     <string name="total_distance_display">Distance:\n %1$.2f km</string>
     <string name="avg_speed_display">Avg speed:\n %1$.2f km/h</string>
     <string name="duration_display">Duration:\n %1$s</string>

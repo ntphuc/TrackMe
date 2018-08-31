@@ -25,11 +25,13 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.thv.android.trackme.BasicApp;
 import com.thv.android.trackme.common.Constanst;
 import com.thv.android.trackme.databinding.WorkoutItemBinding;
 import com.thv.android.trackme.model.Workout;
 import com.thv.android.trackme.R;
 import com.thv.android.trackme.listener.WorkoutClickCallback;
+
 import java.util.List;
 import java.util.Objects;
 
@@ -92,9 +94,10 @@ public class WorkoutAdapter extends RecyclerView.Adapter<WorkoutAdapter.WorkoutV
 
     @Override
     public void onBindViewHolder(WorkoutViewHolder holder, int position) {
-        Log.e(Constanst.LOG_TAG, "Number locations "+mWorkoutList.get(position).getLocationSize());
+        Log.e(Constanst.LOG_TAG, "Number locations " + mWorkoutList.get(position).getLocationSize());
         holder.binding.setWorkout(mWorkoutList.get(position));
-        ImageLoader.getInstance().displayImage(mWorkoutList.get(position).getImageUrl(),holder.binding.ivMap);
+        ImageLoader.getInstance().displayImage(mWorkoutList.get(position).getImageUrl(),
+                holder.binding.ivMap, BasicApp.getInstance().getImageOptions());
         holder.binding.executePendingBindings();
     }
 

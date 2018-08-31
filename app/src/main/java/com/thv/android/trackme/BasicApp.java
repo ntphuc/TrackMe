@@ -91,15 +91,15 @@ public class BasicApp extends Application {
         ImageLoader.getInstance().init(config);
     }
 
-//    public DisplayImageOptions getImageOptions() {
-//        if (options == null)
-//            options = new DisplayImageOptions.Builder()
-//                    .showImageOnLoading(R.drawable.no_image)
-//                    .showImageForEmptyUri(R.drawable.no_image)
-//                    .imageScaleType(ImageScaleType.IN_SAMPLE_INT)
-//                    .bitmapConfig(Bitmap.Config.RGB_565)
-//                    .cacheInMemory(true).cacheOnDisk(true)
-//                    .considerExifParams(true).build();
-//        return options;
-//    }
+    public DisplayImageOptions getImageOptions() {
+        if (options == null)
+            options = new DisplayImageOptions.Builder()
+                    .showImageOnLoading(R.drawable.no_image)
+                    .showImageForEmptyUri(R.drawable.no_image)
+                    .imageScaleType(ImageScaleType.IN_SAMPLE_INT)
+                    .bitmapConfig(Bitmap.Config.RGB_565)
+                    .cacheInMemory(true).cacheOnDisk(true)
+                    .considerExifParams(true).build();
+        return options;
+    }
 }

@@ -153,7 +153,7 @@ public class WorkoutEntity implements Workout, Parcelable {
 //        return s.toString();
 //    }
     public String getImageUrl() {
-        StaticMap map = new StaticMap()
+        StaticMap map = new StaticMap().zoom(15)
                 .size(960, 640);
         map.key(BasicApp.getInstance().getAppContext().getResources().getString(R.string.google_maps_api_key));
                // .path(Path.Style.builder().color(Color.BLUE).build());
@@ -173,6 +173,7 @@ public class WorkoutEntity implements Workout, Parcelable {
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
+        Log.e(Constanst.LOG_TAG ,  " image url "+ url);
         return url;
     }
 

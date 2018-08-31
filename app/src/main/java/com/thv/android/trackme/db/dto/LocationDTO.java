@@ -7,15 +7,7 @@ import android.os.Parcelable;
 
 import java.io.Serializable;
 
-/**
- * Contains a single location. This location is both parcelable as well as serializable.
- *
- * This object is very similar to Android's Location class. However Android's Location class
- * is not serializable.
- *
- * Additionally we can save some memory by storing only the interesting parts of a Location
- * object (but waste some more CPU cycles during conversion)
- */
+
 public class LocationDTO implements Parcelable, Serializable {
 
     double latitude;

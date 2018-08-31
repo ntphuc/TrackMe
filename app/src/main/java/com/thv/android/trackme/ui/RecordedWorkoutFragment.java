@@ -62,6 +62,7 @@ import com.thv.android.trackme.viewmodel.RecordedWorkoutViewModel;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
+
 //TODO
 // Update map with list locations
 // Update satistics info such as current speed, current distance, duration
@@ -74,11 +75,13 @@ public class RecordedWorkoutFragment extends Fragment implements OnMapReadyCallb
     private RecordedWorkoutViewModel model;
     private RecordedWorkoutFragmentBinding mBinding;
     //private WorkoutEntity mWorkout = new WorkoutEntity();
-    private boolean isRecording=true;
+    private boolean isRecording = true;
     private MapView mMapView;
     private GoogleMap gmap;
     private FreeWaypointMap fwMap;
-    /** Handle broadcast messages from GPSReceiver */
+    /**
+     * Handle broadcast messages from GPSReceiver
+     */
     private BroadcastReceiver mGPSReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -93,7 +96,7 @@ public class RecordedWorkoutFragment extends Fragment implements OnMapReadyCallb
 
             if (intent.hasExtra(TrackingService.EXTRA_PARAM_WORKOUT_ENTITY)) {
                 final WorkoutEntity workoutEntity = intent.getParcelableExtra(TrackingService.EXTRA_PARAM_WORKOUT_ENTITY);
-               // workoutEntity.setId(model.workout.get().getId());
+                // workoutEntity.setId(model.workout.get().getId());
                 handleLocationChanged(workoutEntity);
             } else if (intent.hasExtra(TrackingService.EXTRA_PARAM_GPS_PROVIDER)) {
                 showGPSProviderHint(intent.getExtras().getBoolean(TrackingService.EXTRA_PARAM_GPS_PROVIDER));
@@ -102,11 +105,10 @@ public class RecordedWorkoutFragment extends Fragment implements OnMapReadyCallb
     };
 
 
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
-            @Nullable Bundle savedInstanceState) {
+                             @Nullable Bundle savedInstanceState) {
         // Inflate this data binding layout
         mBinding = DataBindingUtil.inflate(inflater, R.layout.recorded_workout_fragment, container, false);
 
@@ -115,11 +117,9 @@ public class RecordedWorkoutFragment extends Fragment implements OnMapReadyCallb
     }
 
 
-
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
 
 
         RecordedWorkoutViewModel.Factory factory = new RecordedWorkoutViewModel.Factory(
@@ -140,11 +140,11 @@ public class RecordedWorkoutFragment extends Fragment implements OnMapReadyCallb
     }
 
     private void initMap(Bundle savedInstanceState) {
-        mMapView = (MapView)mBinding.getRoot().findViewById( R.id.map );
+        mMapView = (MapView) mBinding.getRoot().findViewById(R.id.map);
 
-        mMapView.onCreate( savedInstanceState );
+        mMapView.onCreate(savedInstanceState);
 
-        mMapView.getMapAsync( this);
+        mMapView.getMapAsync(this);
 
 
     }
@@ -167,7 +167,7 @@ public class RecordedWorkoutFragment extends Fragment implements OnMapReadyCallb
         model.getObservableWorkout().observe(this, new Observer<WorkoutEntity>() {
             @Override
             public void onChanged(@Nullable WorkoutEntity workoutEntity) {
-                Log.e(Constanst.LOG_TAG , " on change work entity "+workoutEntity.getId());
+                Log.e(Constanst.LOG_TAG, " on change work entity " + workoutEntity.getId());
                 model.setWorkout(workoutEntity);
                 mBinding.setRecordedWorkoutViewModel(model);
             }
@@ -175,7 +175,10 @@ public class RecordedWorkoutFragment extends Fragment implements OnMapReadyCallb
 
 
     }
-    /** Handle location updates */
+
+    /**
+     * Handle location updates
+     */
     private void handleLocationChanged(final WorkoutEntity workoutEntity) {
         model.getObservableWorkout().setValue(workoutEntity);
         updateMap(workoutEntity.getLocations());
@@ -183,16 +186,16 @@ public class RecordedWorkoutFragment extends Fragment implements OnMapReadyCallb
     }
 
     private void updateMap(ArrayDeque<LocationDTO> locations) {
-      //  map1ReadyCallback.onMapReady(gmap);
-        configureMap( this.getContext(), fwMap ,locations );
+        //  map1ReadyCallback.onMapReady(gmap);
+        configureMap(this.getContext(), fwMap, locations);
 
         new Handler().post(new Runnable() {
             @Override
             public void run() {
                 CameraUpdate update = fwMap.adjustZoomToMarkers();
-                fwMap.getGoogleMap().moveCamera( update );
+                fwMap.getGoogleMap().moveCamera(update);
             }
-        } );
+        });
 
     }
 //    /** Creates workout fragment for specific workout ID */
@@ -212,25 +215,25 @@ public class RecordedWorkoutFragment extends Fragment implements OnMapReadyCallb
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        gmap=googleMap;
-        fwMap = new FreeWaypointMap( this.getActivity(), gmap );
+        gmap = googleMap;
+        fwMap = new FreeWaypointMap(this.getActivity(), gmap);
 
     }
 
 
+    private void configureMap(Context context, WaypointMap map, ArrayDeque<LocationDTO> listLocations) {
+        if (context == null) return;
+        if (map!=null)
+            map.clear();
+        if (listLocations.isEmpty()) {
 
-    private void configureMap( Context context, WaypointMap map, ArrayDeque<LocationDTO> listLocations ) {
-        if (context==null) return;
-        map.clear();
-        if (listLocations.isEmpty()){
-
-        }else {
+        } else {
             LatLng position1 = new LatLng(listLocations.getFirst().getLatitude(), listLocations.getFirst().getLongitude());
             LatLng position2 = new LatLng(listLocations.getLast().getLatitude(), listLocations.getLast().getLongitude());
 
             IconBadge badge1 = new IconBadge(context);
             badge1.setBackgroundShapeCircle();
-            badge1.setBackgroundShapeColor(Color.BLACK);
+            badge1.setBackgroundShapeColor(Color.BLUE);
             badge1.setElevation(context.getResources().getDimension(
                     R.dimen.marker_shadow));
             badge1.setForegroundShapeColor(Color.WHITE);
@@ -239,7 +242,7 @@ public class RecordedWorkoutFragment extends Fragment implements OnMapReadyCallb
 
             IconBadge badge2 = new IconBadge(context);
             badge2.setBackgroundShapePin();
-            badge2.setBackgroundShapeColor(Color.BLACK);
+            badge2.setBackgroundShapeColor(Color.RED);
             badge2.setElevation(context.getResources().getDimension(
                     R.dimen.marker_shadow));
             badge2.setForegroundShapeColor(Color.WHITE);
@@ -258,7 +261,7 @@ public class RecordedWorkoutFragment extends Fragment implements OnMapReadyCallb
             ArrayList<LatLng> actual = new ArrayList<LatLng>(listLocations.size());
             int size = listLocations.size();
             for (final LocationDTO location : listLocations) {
-                actual.add(new LatLng(location.getLatitude(),location.getLongitude()));
+                actual.add(new LatLng(location.getLatitude(), location.getLongitude()));
             }
 //            actual.add(new LatLng(52.49528098552441, 13.349714605137706));
 //            actual.add(new LatLng(52.49463431251219, 13.349741427227855));
@@ -271,7 +274,9 @@ public class RecordedWorkoutFragment extends Fragment implements OnMapReadyCallb
         }
     }
 
-    /** Show information about disabled/enabled GPS provider */
+    /**
+     * Show information about disabled/enabled GPS provider
+     */
     private void showGPSProviderHint(boolean gpsEnabled) {
         if (!gpsEnabled) {
             // warn about disabled GPS provider
@@ -300,6 +305,7 @@ public class RecordedWorkoutFragment extends Fragment implements OnMapReadyCallb
 
         mMapView.onSaveInstanceState(mMapviewBundle);
     }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -318,27 +324,31 @@ public class RecordedWorkoutFragment extends Fragment implements OnMapReadyCallb
         mMapView.onStop();
 
     }
+
     @Override
     public void onPause() {
         mMapView.onPause();
         super.onPause();
     }
+
     @Override
     public void onDestroy() {
         mMapView.onDestroy();
         fwMap.clear();
         super.onDestroy();
     }
+
     @Override
     public void onLowMemory() {
         super.onLowMemory();
         mMapView.onLowMemory();
     }
+
     private final WorkoutControlListener mStatusControlListener = new WorkoutControlListener() {
 
         @Override
         public void onPause() {
-            Toast.makeText(RecordedWorkoutFragment.this.getContext(),"onPause", Toast.LENGTH_LONG).show();
+            Toast.makeText(RecordedWorkoutFragment.this.getContext(), "onPause", Toast.LENGTH_LONG).show();
             mBinding.setIsRecording(false);
             TrackingService.pauseTracking(RecordedWorkoutFragment.this.getContext());
 
@@ -346,30 +356,27 @@ public class RecordedWorkoutFragment extends Fragment implements OnMapReadyCallb
 
         @Override
         public void onResume() {
-            Toast.makeText(RecordedWorkoutFragment.this.getContext(),"onResume", Toast.LENGTH_LONG).show();
+            Toast.makeText(RecordedWorkoutFragment.this.getContext(), "onResume", Toast.LENGTH_LONG).show();
             TrackingService.startTracking(RecordedWorkoutFragment.this.getContext());
         }
 
         @Override
         public void onStop() {
-            Toast.makeText(RecordedWorkoutFragment.this.getContext(),"onStop", Toast.LENGTH_LONG).show();
+            Toast.makeText(RecordedWorkoutFragment.this.getContext(), "onStop", Toast.LENGTH_LONG).show();
             TrackingService.stopTracking(RecordedWorkoutFragment.this.getContext());
-            saveWorkout();
+            returnListWorkouts();
         }
     };
 
-    private void saveWorkout() {
-        model.updateWorkout();
-        backFragment();
-    }
-
-    /** Shows the workout detail fragment */
-    public void backFragment() {
+    /**
+     * Shows the workout detail fragment
+     */
+    public void returnListWorkouts() {
 
         getActivity().getSupportFragmentManager().popBackStack();
     }
 
-    public int getWorkoutId(){
+    public int getWorkoutId() {
         return model.getObservableWorkout().getValue().getId();
     }
 }

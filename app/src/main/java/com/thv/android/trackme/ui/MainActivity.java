@@ -32,6 +32,7 @@ import com.thv.android.trackme.BasicApp;
 import com.thv.android.trackme.R;
 import com.thv.android.trackme.model.Workout;
 import com.thv.android.trackme.utils.CommonUtils;
+import com.thv.android.trackme.utils.NotificationHelper;
 
 public class MainActivity extends AppCompatActivity {
     public final static int PERMISSION_ALL = 1;
@@ -41,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.main_activity);
         BasicApp.getInstance().setAppContext(this);
         requestAppPermission();
+
         // Add workout list fragment if this is first creation
         if (savedInstanceState == null) {
             WorkoutListFragment fragment = new WorkoutListFragment();
@@ -74,6 +76,12 @@ public class MainActivity extends AppCompatActivity {
                 .addToBackStack(WorkoutFragment.class.getSimpleName())
                 .replace(R.id.fragment_container,
                         workoutFragment, WorkoutFragment.class.getSimpleName()).commit();
+    }
+
+    @Override
+    protected void onUserLeaveHint() {
+
+        super.onUserLeaveHint();
     }
 
     /** Shows the workout detail fragment */

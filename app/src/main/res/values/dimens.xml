@@ -24,4 +24,5 @@
     <dimen name="comment_minHeight">64dp</dimen>
     <dimen name="marker_shadow">5dp</dimen>
     <dimen name="workout_item_min_height">100dp</dimen>
+    <dimen name="margin_bottom_fab">10dp</dimen>
 </resources>

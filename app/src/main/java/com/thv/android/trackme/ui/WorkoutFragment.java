@@ -28,6 +28,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.thv.android.trackme.BasicApp;
 import com.thv.android.trackme.R;
 import com.thv.android.trackme.databinding.WorkoutFragmentBinding;
 import com.thv.android.trackme.db.entity.CommentEntity;
@@ -79,7 +80,7 @@ public class WorkoutFragment extends Fragment {
             public void onChanged(@Nullable WorkoutEntity workoutEntity) {
                 model.setWorkout(workoutEntity);
                 ImageView ivMap  =  mBinding.getRoot().findViewById(R.id.ivMap);
-                ImageLoader.getInstance().displayImage(workoutEntity.getImageUrl(),ivMap);
+                ImageLoader.getInstance().displayImage(workoutEntity.getImageUrl(),ivMap, BasicApp.getInstance().getImageOptions());
 
             }
         });
