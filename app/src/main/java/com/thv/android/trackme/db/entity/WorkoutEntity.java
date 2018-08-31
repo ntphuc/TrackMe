@@ -160,7 +160,6 @@ public class WorkoutEntity implements Workout, Parcelable {
         GeoPoint[] gp = new GeoPoint[locations.size()];
         int i =0;
         for (LocationDTO location : locations) {
-           // map.path(new GeoPoint(location.getLatitude(), location.getLongitude()));
             gp[i]=new GeoPoint(location.getLatitude(), location.getLongitude());
             i++;
         }
@@ -182,11 +181,7 @@ public class WorkoutEntity implements Workout, Parcelable {
         return locations.size();
     }
 
-    //
-//    @BindingAdapter({"bind:imageUrl"})
-//    public static void loadImage(ImageView view, String imageUrl) {
-//        ImageLoader.getInstance().displayImage(imageUrl, view);
-//    }
+
     public WorkoutEntity() {
         locations = new ArrayDeque<LocationDTO>();
     }

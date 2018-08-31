@@ -16,11 +16,8 @@
 
 <resources>
     <string name="app_name">TrackMe</string>
-    <string name="no_comments">No comments</string>
-    <string name="loading_comments">Loading comments...</string>
     <string name="loading_workouts">Loading workouts...</string>
     <string name="cd_workouts_list">Workouts list</string>
-    <string name="cd_comments_list">Comments list</string>
     <string name="cd_workout_name">Name of the workout</string>
 
 

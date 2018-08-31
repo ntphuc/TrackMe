@@ -366,8 +366,7 @@ public class RecordedWorkoutFragment extends Fragment implements OnMapReadyCallb
     /** Shows the workout detail fragment */
     public void backFragment() {
 
-//        getActivity().getSupportFragmentManager()
-//                .beginTransaction().remove(this).commit();
+        getActivity().getSupportFragmentManager().popBackStack();
     }
 
     public int getWorkoutId(){
