@@ -1,0 +1,9 @@
+1. Change name of class and variable Workouts -> Workouts
+2. Create database structure, dto corresponding.
+2. Implement layout list workouts, and workout detail.
+3. Design mapview on Android.
+3. Create service to update location and insert database
+4. Create broadcast to send location to activity and fragment.
+5. Create notification when service ongoing
+
+-> Check performance, battery, network. ?
