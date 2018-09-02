@@ -17,7 +17,6 @@
 package com.thv.android.trackme.db;
 
 import com.thv.android.trackme.db.dto.LocationDTO;
-import com.thv.android.trackme.db.entity.CommentEntity;
 import com.thv.android.trackme.db.entity.WorkoutEntity;
 import com.thv.android.trackme.model.Workout;
 
@@ -64,35 +63,17 @@ public class DataGenerator {
     }
 
     public static List<WorkoutEntity> generateWorkouts() {
-        List<WorkoutEntity> workouts = new ArrayList<>(FIRST.length );
-        Random rnd = new Random();
-        for (int i = 0; i < FIRST.length; i++) {
-                WorkoutEntity workout = new WorkoutEntity();
-                workout.setLocations(generateListLocations());
-                workout.setId(i);
-                workouts.add(workout);
-
-        }
+        List<WorkoutEntity> workouts = new ArrayList<>(0 );
+//        Random rnd = new Random();
+//        for (int i = 0; i < FIRST.length; i++) {
+//                WorkoutEntity workout = new WorkoutEntity();
+//                workout.setLocations(generateListLocations());
+//                workout.setId(i);
+//                workouts.add(workout);
+//
+//        }
         return workouts;
     }
 
-    public static List<CommentEntity> generateCommentsForWorkouts(
-            final List<WorkoutEntity> workouts) {
-        List<CommentEntity> comments = new ArrayList<>();
-        Random rnd = new Random();
 
-        for (Workout workout : workouts) {
-            int commentsNumber = rnd.nextInt(5) + 1;
-            for (int i = 0; i < commentsNumber; i++) {
-                CommentEntity comment = new CommentEntity();
-                comment.setWorkoutId(workout.getId());
-                comment.setText(COMMENTS[i] + " for " + workout.getId());
-                comment.setPostedAt(new Date(System.currentTimeMillis()
-                        - TimeUnit.DAYS.toMillis(commentsNumber - i) + TimeUnit.HOURS.toMillis(i)));
-                comments.add(comment);
-            }
-        }
-
-        return comments;
-    }
 }

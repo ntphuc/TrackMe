@@ -1,6 +1,5 @@
 package com.thv.android.trackme.db;
 
-import com.thv.android.trackme.db.entity.CommentEntity;
 import com.thv.android.trackme.db.entity.WorkoutEntity;
 
 import java.util.Arrays;

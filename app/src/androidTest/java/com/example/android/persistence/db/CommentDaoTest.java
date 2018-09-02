@@ -33,9 +33,7 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.thv.android.trackme.LiveDataTestUtil;
-import com.thv.android.trackme.db.dao.CommentDao;
 import com.thv.android.trackme.db.dao.WorkoutDao;
-import com.thv.android.trackme.db.entity.CommentEntity;
 
 import org.junit.After;
 import org.junit.Before;

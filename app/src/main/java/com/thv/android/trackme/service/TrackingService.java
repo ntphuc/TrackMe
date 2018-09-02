@@ -7,6 +7,7 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
@@ -34,8 +35,11 @@ import com.thv.android.trackme.common.Constanst;
 import com.thv.android.trackme.db.dto.LocationDTO;
 import com.thv.android.trackme.db.entity.WorkoutEntity;
 import com.thv.android.trackme.listener.InsertCallbackListener;
+import com.thv.android.trackme.utils.LogUtils;
 import com.thv.android.trackme.utils.PreferenceUtils;
 import com.thv.android.trackme.viewmodel.RecordedWorkoutViewModel;
+
+import java.util.List;
 
 //TODO
 // Register location update service
@@ -44,23 +48,20 @@ public class TrackingService extends Service implements LocationListener, Insert
     private static final String TAG = TrackingService.class.getSimpleName();
     // actions
     // start receiving continuous location updates
-    private static final String ACTION_START_RECORDING = "action.start_recording";
+    public static final String ACTION_NEW_SESSION_RECORDING = "action.new_session_recording";
     // pause receiving continuous location updates
-    private static final String ACTION_PAUSE_RECORDING = "action.pause_recording";
+    public static final String ACTION_RESUME_RECORDING = "action.resume_recording";
+    // pause receiving continuous location updates
+    public static final String ACTION_PAUSE_RECORDING = "action.pause_recording";
     // stop receiving continuous location updates
-    private static final String ACTION_STOP_RECORDING = "action.stop_recording";
+    public static final String ACTION_STOP_RECORDING = "action.stop_recording";
     // request broadcast message about current locations
-    private static final String ACTION_BROADCAST_LOCATIONS = "action.broadcast_locations";
-    // add a single location
-    private static final String ACTION_ADD_SINGLE_LOCATION = "action.add_single_location";
-    // delete all locations
-    private static final String ACTION_DELETE_ALL_LOCATIONS = "action.delete_all_locations";
-    // re-read settings
-    private static final String ACTION_REREAD_SETTINGS = "action.reread_settings";
+    public static final String ACTION_BROADCAST_LOCATIONS = "action.broadcast_locations";
+;
 
 
-    private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10;
-    private static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 1;
+    private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 50; //50m
+    private static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 2; //2m
 
 //    private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 0;
 //    private static final long MIN_TIME_BW_UPDATES = 1000 ;
@@ -81,13 +82,13 @@ public class TrackingService extends Service implements LocationListener, Insert
 
     @Override
     public void onCreate() {
-        Log.v(TAG, "onCreate()");
-        BasicApp.getInstance().getRepository().insertWorkout(mWordkout, this);
+        LogUtils.i(LogUtils.TAG_ROUTE_CREATE_SERVICE, "TrackingService onCreate");
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.v(TAG, "onStartCommand()");
+
+        LogUtils.i(LogUtils.TAG_ROUTE_CREATE_SERVICE, "TrackingService onStartCommand");
         // as a service we must call this ourselves
         if (intent != null && intent.getAction() != null) {
             onHandleIntent(intent);
@@ -115,8 +116,11 @@ public class TrackingService extends Service implements LocationListener, Insert
 
         Log.v(TAG, "onHandleIntent(): action " + action);
         switch (action) {
-            case ACTION_START_RECORDING:
-                startRecording();
+            case ACTION_NEW_SESSION_RECORDING:
+                newSessionRecording(intent);
+                break;
+            case ACTION_RESUME_RECORDING:
+                resumeRecording();
                 break;
             case ACTION_PAUSE_RECORDING:
                 pauseRecording();
@@ -133,24 +137,69 @@ public class TrackingService extends Service implements LocationListener, Insert
         }
     }
 
+    private void newSessionRecording(Intent intent) {
+
+        // update old workout
+//        LiveData<List<WorkoutEntity>> listWorkout= BasicApp.getInstance().getRepository().getWorkouts();
+//        for (WorkoutEntity workout:listWorkout.getValue()
+//                ) {
+//            if (workout.getStatus()==WorkoutEntity.RECORDING){
+//                workout.setStatus(WorkoutEntity.FINISHED);
+//                BasicApp.getInstance().getRepository().updateWordout(workout);
+//                break;
+//            }
+//        }
+
+
+        mWordkout = intent.getParcelableExtra(TrackingService.EXTRA_PARAM_WORKOUT_ENTITY);
+        LogUtils.i(LogUtils.TAG_ROUTE_CREATE_SERVICE, "TrackingService newSessionRecording id =" +mWordkout.getId());
+        if (mWordkout.getId()==0) {
+            // create new session
+            LogUtils.i(LogUtils.TAG_ROUTE_CREATE_SERVICE, "TrackingService create new session id =" +mWordkout.getId());
+
+            // update old workout
+            LiveData<List<WorkoutEntity>> listWorkout= BasicApp.getInstance().getRepository().getWorkouts();
+            for (WorkoutEntity workout:listWorkout.getValue()) {
+                if (workout.getStatus()==WorkoutEntity.RECORDING){
+                    LogUtils.i(LogUtils.TAG_ROUTE_CREATE_SERVICE, "TrackingService update workout id =" +workout.getId());
+
+                    workout.setStatus(WorkoutEntity.FINISHED);
+                    BasicApp.getInstance().getRepository().updateWordout(workout);
+                    break;
+                }
+            }
+            // insert new workout
+            BasicApp.getInstance().getRepository().insertWorkout(mWordkout, this);
+
+        }
+        resumeRecording();
+
+
+    }
+
     /**
      * Start receiving continuous location updates
      */
-    protected void startRecording() {
-        Log.v(TAG, "startRecording()");
+    protected void resumeRecording() {
+        LogUtils.i(LogUtils.TAG_ROUTE_CREATE_SERVICE, "TrackingService resumeRecording id =" +mWordkout.getId());
+
 
         isRecording = true;
         PreferenceUtils.putValueRecording(this, true);
 
         // startForeground(NOTIFICATION_ID, buildNotification());
         requestLocationUpdates(true /* continuous */);
+        mWordkout.setStatus(WorkoutEntity.RECORDING);
+        storeState();
+        sendLocationBroadcast();
     }
 
     /**
      * Stop receiving continuous location updates
      */
     protected void pauseRecording() {
-        Log.v(TAG, "pauseRecording()");
+        LogUtils.i(LogUtils.TAG_ROUTE_CREATE_SERVICE, "TrackingService pauseRecording id =" +mWordkout.getId());
+
 
         isRecording = false;
         PreferenceUtils.putValueRecording(this, isRecording);
@@ -159,9 +208,9 @@ public class TrackingService extends Service implements LocationListener, Insert
             locationManager.removeUpdates(this);
 
         }
-
+        mWordkout.setStatus(WorkoutEntity.PAUSE);
         storeState();
-
+        sendLocationBroadcast();
 
     }
 
@@ -169,21 +218,23 @@ public class TrackingService extends Service implements LocationListener, Insert
      * Stop receiving continuous location updates
      */
     protected void stopRecording() {
-        Log.v(TAG, "stopRecording()");
+        LogUtils.i(LogUtils.TAG_ROUTE_CREATE_SERVICE, "TrackingService stopRecording id =" +mWordkout.getId());
+
         pauseRecording();
+        mWordkout.setStatus(WorkoutEntity.FINISHED);
         storeState();
         stopSelf();
     }
 
-    /**
-     * Request a broadcast message about current locations.
-     */
-    public static void startActionBroadcastLocations(final Context context) {
-        Log.v(TAG, "startActionBroadcastLocations()");
-        Intent intent = new Intent(context, TrackingService.class);
-        intent.setAction(ACTION_BROADCAST_LOCATIONS);
-        context.startService(intent);
-    }
+//    /**
+//     * Request a broadcast message about current locations.
+//     */
+//    public static void startActionBroadcastLocations(final Context context) {
+//        Log.v(TAG, "startActionBroadcastLocations()");
+//        Intent intent = new Intent(context, TrackingService.class);
+//        intent.setAction(ACTION_BROADCAST_LOCATIONS);
+//        context.startService(intent);
+//    }
 
     @Nullable
     @Override
@@ -197,7 +248,7 @@ public class TrackingService extends Service implements LocationListener, Insert
      */
     @SuppressWarnings("MissingPermission")
     protected void requestLocationUpdates(boolean continuous) {
-        Log.v(TAG, "requestLocationUpdates(): continuous " + continuous);
+        LogUtils.i(LogUtils.TAG_ROUTE_CREATE_SERVICE, "TrackingService requestLocationUpdates id =" +mWordkout.getId());
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             Toast toast = Toast.makeText(getApplicationContext(), R.string.toast_location_permissions_missing, Toast.LENGTH_LONG);
@@ -257,15 +308,16 @@ public class TrackingService extends Service implements LocationListener, Insert
     @SuppressLint({"DefaultLocale", "SimpleDateFormat"})
     @Override
     public void onLocationChanged(Location location) {
-        Log.v(Constanst.LOG_TAG, "onLocationChanged() " + location.getLatitude());
+        LogUtils.i(LogUtils.TAG_ROUTE_CREATE_SERVICE, "TrackingService onLocationChanged locations size =" +mWordkout.getLocations().size());
         if (location != null) {
-            mWordkout.getLocations().addLast(new LocationDTO(location));
+                mWordkout.getLocations().addLast(new LocationDTO(location));
         } // else continue, we have been called from deleteLocations()
 
-        // we just wanted to obtain a single location
-        if (!PreferenceUtils.isRecordEnable(getApplicationContext()) && locationManager != null) {
-            locationManager.removeUpdates(this);
-        }
+//        // we just wanted to obtain a single location
+//        if (!PreferenceUtils.isRecordEnable(getApplicationContext()) && locationManager != null) {
+//            locationManager.removeUpdates(this);
+//        }
+// LogUtils.showToast(getApplicationContext(), "onLocationChanged locations size="+mWordkout.getLocations().size());
         sendLocationBroadcast();
 
     }
@@ -289,57 +341,26 @@ public class TrackingService extends Service implements LocationListener, Insert
      * Send broadcast message with location backlog
      */
     protected void sendLocationBroadcast() {
-        Log.v(TAG, "sendLocationBroadcast()");
+        LogUtils.i(LogUtils.TAG_ROUTE_CREATE_SERVICE, "TrackingService sendLocationBroadcast id =" +mWordkout.getId());
         Intent intent = new Intent(TrackingService.class.getSimpleName());
         intent.putExtra(EXTRA_PARAM_WORKOUT_ENTITY, (Parcelable) mWordkout);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
 
-    /**
-     * Stop receiving continuous location updates
-     */
-    public static void startTracking(final Context context) {
-        Log.v(TAG, "start tracking");
 
-        Intent intent = new Intent(context, TrackingService.class);
-        intent.setAction(ACTION_START_RECORDING);
-        context.startService(intent);
-    }
-
-    /**
-     * Stop receiving continuous location updates
-     */
-    public static void pauseTracking(final Context context) {
-        Log.v(TAG, "pause tracking ()");
-
-        Intent intent = new Intent(context, TrackingService.class);
-        intent.setAction(ACTION_PAUSE_RECORDING);
-        context.startService(intent);
-    }
-
-    /**
-     * Stop receiving continuous location updates
-     */
-    public static void stopTracking(final Context context) {
-        Log.v(TAG, "stop tracking ()");
-
-        Intent intent = new Intent(context, TrackingService.class);
-        intent.setAction(ACTION_STOP_RECORDING);
-        context.startService(intent);
-    }
 
     @Override
     public void onLowMemory() {
-        stopRecording();
+        storeState();
         super.onLowMemory();
     }
 
     @Override
     @SuppressWarnings("MissingPermission")
     public void onDestroy() {
-        Log.v(TAG, "onDestroy()");
-        stopRecording();
+        LogUtils.i(LogUtils.TAG_ROUTE_CREATE_SERVICE, "TrackingService onDestroy id =" +mWordkout.getId());
+
 
 
     }
@@ -352,7 +373,10 @@ public class TrackingService extends Service implements LocationListener, Insert
 
     @Override
     public void onInsertSuccess(long workoutId) {
+
         mWordkout.setId((int) workoutId);
+        LogUtils.i(LogUtils.TAG_ROUTE_CREATE_SERVICE, "TrackingService onInsertSuccess id =" +mWordkout.getId());
+
     }
 
 }

@@ -18,7 +18,6 @@ package com.thv.android.trackme.viewmodel;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
-import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
@@ -29,11 +28,8 @@ import android.util.Log;
 import com.thv.android.trackme.BasicApp;
 import com.thv.android.trackme.DataRepository;
 import com.thv.android.trackme.common.Constanst;
-import com.thv.android.trackme.db.entity.CommentEntity;
 import com.thv.android.trackme.db.entity.WorkoutEntity;
 import com.thv.android.trackme.listener.InsertCallbackListener;
-
-import java.util.List;
 
 public class RecordedWorkoutViewModel extends AndroidViewModel implements InsertCallbackListener {
 

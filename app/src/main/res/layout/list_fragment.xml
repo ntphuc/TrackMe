@@ -28,7 +28,7 @@
     </data>
 
 
-    <android.support.design.widget.CoordinatorLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/cardview_light_background">
@@ -38,7 +38,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center_vertical|center_horizontal"
-            android:text="@string/loading_workouts"
+            android:text="@string/create_new_workout"
             android:textAlignment="center"
             app:visibleGone="@{isLoading}" />
 
@@ -56,11 +56,11 @@
             android:layout_height="wrap_content"
             android:src="@drawable/ic_add_white_24dp"
             android:layout_marginBottom="@dimen/margin_bottom_fab"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
             app:backgroundTint="@color/orange"
             app:fabSize="normal"
-            app:layout_anchor="@id/workouts_list"
-            app:layout_anchorGravity="bottom|center_horizontal"
             android:onClick="@{() ->  record.onRecord()}"/>
 
-    </android.support.design.widget.CoordinatorLayout>
+    </RelativeLayout>
 </layout>

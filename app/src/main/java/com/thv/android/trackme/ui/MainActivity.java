@@ -17,8 +17,11 @@
 package com.thv.android.trackme.ui;
 
 import android.Manifest;
+import android.arch.lifecycle.LiveData;
+import android.content.ComponentCallbacks2;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -26,13 +29,20 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.thv.android.trackme.BasicApp;
 import com.thv.android.trackme.R;
+import com.thv.android.trackme.common.Constanst;
+import com.thv.android.trackme.db.entity.WorkoutEntity;
 import com.thv.android.trackme.model.Workout;
+import com.thv.android.trackme.service.TrackingService;
 import com.thv.android.trackme.utils.CommonUtils;
+import com.thv.android.trackme.utils.LogUtils;
 import com.thv.android.trackme.utils.NotificationHelper;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     public final static int PERMISSION_ALL = 1;
@@ -42,13 +52,16 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.main_activity);
         BasicApp.getInstance().setAppContext(this);
         requestAppPermission();
-
+        LogUtils.i(LogUtils.TAG_ROUTE_CREATE_SERVICE, "MainActivity OnCreate");
         // Add workout list fragment if this is first creation
         if (savedInstanceState == null) {
             WorkoutListFragment fragment = new WorkoutListFragment();
 
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.fragment_container, fragment, WorkoutListFragment.class.getSimpleName()).commit();
+
+
+
         }
     }
 
@@ -85,9 +98,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /** Shows the workout detail fragment */
-    public void showRecordedWorkout() {
+    public void showRecordedWorkout(Bundle bundle) {
 
-        RecordedWorkoutFragment workoutFragment = RecordedWorkoutFragment.getInstance();
+        RecordedWorkoutFragment workoutFragment = RecordedWorkoutFragment.getInstance(bundle);
 
         getSupportFragmentManager()
                 .beginTransaction()
@@ -107,16 +120,20 @@ public class MainActivity extends AppCompatActivity {
 //        }
     }
 
+
+
     @Override
     public void onBackPressed() {
         FragmentManager fm = getSupportFragmentManager();
         Fragment fragment = fm.findFragmentById(R.id.fragment_container);
         if (fragment instanceof RecordedWorkoutFragment){
-           // showDialogConfirm();
-            CommonUtils.showDialogConfirmStopTracking(fragment);
-        }else {
-            super.onBackPressed();
+           WorkoutEntity workout = ((RecordedWorkoutFragment) fragment).getWorkout();
+           Fragment listFragment = fm.findFragmentByTag(WorkoutListFragment.class.getSimpleName());
+           if (listFragment!=null && listFragment instanceof WorkoutListFragment ){
+               ((WorkoutListFragment)listFragment).updateListWorkout(workout);
+           }
         }
+        super.onBackPressed();
     }
 
 

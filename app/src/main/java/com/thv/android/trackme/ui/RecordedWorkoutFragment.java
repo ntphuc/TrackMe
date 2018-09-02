@@ -27,6 +27,7 @@ import android.databinding.DataBindingUtil;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
@@ -54,8 +55,8 @@ import com.thv.android.trackme.db.dto.LocationDTO;
 import com.thv.android.trackme.db.entity.WorkoutEntity;
 import com.thv.android.trackme.listener.WorkoutActionListener;
 import com.thv.android.trackme.listener.WorkoutControlListener;
-import com.thv.android.trackme.model.Comment;
 import com.thv.android.trackme.service.TrackingService;
+import com.thv.android.trackme.utils.LogUtils;
 import com.thv.android.trackme.utils.PreferenceUtils;
 import com.thv.android.trackme.viewmodel.RecordedWorkoutViewModel;
 
@@ -121,6 +122,7 @@ public class RecordedWorkoutFragment extends Fragment implements OnMapReadyCallb
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        LogUtils.i(LogUtils.TAG_ROUTE_CREATE_SERVICE, "RecordedWorkoutFragment onActivityCreated");
 
         RecordedWorkoutViewModel.Factory factory = new RecordedWorkoutViewModel.Factory(
                 getActivity().getApplication());
@@ -151,6 +153,8 @@ public class RecordedWorkoutFragment extends Fragment implements OnMapReadyCallb
 
     private void startServiceRecord() {
         // receive broadcast messages from GPSReceiver service
+        LogUtils.i(LogUtils.TAG_ROUTE_CREATE_SERVICE, "RecordedWorkoutFragment onActivityCreated");
+
         LocalBroadcastManager.getInstance(this.getActivity()).registerReceiver(
                 mGPSReceiver, new IntentFilter(TrackingService.class.getSimpleName()));
 
@@ -158,7 +162,15 @@ public class RecordedWorkoutFragment extends Fragment implements OnMapReadyCallb
         isRecording = PreferenceUtils.isRecordEnable(this.getActivity());
         mBinding.setIsRecording(isRecording);
         // get previously recorded locations
-        TrackingService.startTracking(this.getActivity());
+
+        Bundle bundle = getArguments();
+        WorkoutEntity workout = new WorkoutEntity();
+        if (bundle.getParcelable(TrackingService.EXTRA_PARAM_WORKOUT_ENTITY)!=null){
+            workout = (WorkoutEntity) bundle.getParcelable(TrackingService.EXTRA_PARAM_WORKOUT_ENTITY);
+            model.getObservableWorkout().setValue(workout);
+        }
+
+        newSessionRecording(this.getActivity(),workout);
     }
 
     private void subscribeToModel(final RecordedWorkoutViewModel model) {
@@ -207,9 +219,9 @@ public class RecordedWorkoutFragment extends Fragment implements OnMapReadyCallb
 //        return fragment;
 //    }
 
-    public static RecordedWorkoutFragment getInstance() {
+    public static RecordedWorkoutFragment getInstance(Bundle bundle) {
         RecordedWorkoutFragment fragment = new RecordedWorkoutFragment();
-
+        fragment.setArguments(bundle);
         return fragment;
     }
 
@@ -350,24 +362,66 @@ public class RecordedWorkoutFragment extends Fragment implements OnMapReadyCallb
         public void onPause() {
             Toast.makeText(RecordedWorkoutFragment.this.getContext(), "onPause", Toast.LENGTH_LONG).show();
             mBinding.setIsRecording(false);
-            TrackingService.pauseTracking(RecordedWorkoutFragment.this.getContext());
+            pauseTracking(RecordedWorkoutFragment.this.getContext());
 
         }
 
         @Override
         public void onResume() {
             Toast.makeText(RecordedWorkoutFragment.this.getContext(), "onResume", Toast.LENGTH_LONG).show();
-            TrackingService.startTracking(RecordedWorkoutFragment.this.getContext());
+            resumeTracking(RecordedWorkoutFragment.this.getContext());
         }
 
         @Override
         public void onStop() {
             Toast.makeText(RecordedWorkoutFragment.this.getContext(), "onStop", Toast.LENGTH_LONG).show();
-            TrackingService.stopTracking(RecordedWorkoutFragment.this.getContext());
+            stopTracking(RecordedWorkoutFragment.this.getContext());
             returnListWorkouts();
         }
     };
+    /**
+     * Stop receiving continuous location updates
+     */
+    public void newSessionRecording(final Context context, WorkoutEntity workout) {
+        LogUtils.i(LogUtils.TAG_ROUTE_CREATE_SERVICE, "RecordedWorkoutFragment newSessionRecording");
 
+        Intent intent = new Intent(context, TrackingService.class);
+        intent.setAction(TrackingService.ACTION_NEW_SESSION_RECORDING);
+        intent.putExtra(TrackingService.EXTRA_PARAM_WORKOUT_ENTITY, (Parcelable)workout);
+        context.startService(intent);
+    }
+    /**
+     * Stop receiving continuous location updates
+     */
+    public void resumeTracking(final Context context) {
+        Log.v(Constanst.LOG_TAG, "resume tracking");
+
+        Intent intent = new Intent(context, TrackingService.class);
+        intent.setAction(TrackingService.ACTION_RESUME_RECORDING);
+        context.startService(intent);
+    }
+
+    /**
+     * Stop receiving continuous location updates
+     */
+    public  void pauseTracking(final Context context) {
+        Log.v(Constanst.LOG_TAG, "pause tracking ()");
+
+        Intent intent = new Intent(context, TrackingService.class);
+        intent.setAction(TrackingService.ACTION_PAUSE_RECORDING);
+        context.startService(intent);
+    }
+
+    /**
+     * Stop receiving continuous location updates
+     */
+    public  void stopTracking(final Context context) {
+        Log.v(Constanst.LOG_TAG, "stop tracking ()");
+
+        Intent intent = new Intent(context, TrackingService.class);
+        intent.setAction(TrackingService.ACTION_STOP_RECORDING);
+        context.startService(intent);
+    }
     /**
      * Shows the workout detail fragment
      */
@@ -376,7 +430,7 @@ public class RecordedWorkoutFragment extends Fragment implements OnMapReadyCallb
         getActivity().getSupportFragmentManager().popBackStack();
     }
 
-    public int getWorkoutId() {
-        return model.getObservableWorkout().getValue().getId();
+    public WorkoutEntity getWorkout() {
+        return model.getObservableWorkout().getValue();
     }
 }

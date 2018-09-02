@@ -85,7 +85,7 @@
             android:layout_below="@+id/tvTime"
             android:layout_centerHorizontal="true"
             android:layout_margin="30dp"
-            android:text="@{@string/workout_id(recordedWorkoutViewModel.workout.id)}"/>
+            android:text="@{@string/workout_id(recordedWorkoutViewModel.workout.id , recordedWorkoutViewModel.workout.displayStatus)}"/>
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fabPause"

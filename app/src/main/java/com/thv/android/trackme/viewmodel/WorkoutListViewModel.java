@@ -45,10 +45,16 @@ public class WorkoutListViewModel extends AndroidViewModel {
         mObservableWorkouts.addSource(workouts, mObservableWorkouts::setValue);
     }
 
+    public void updateListWorkouts(){
+//        LiveData<List<WorkoutEntity>> workouts = ((BasicApp) getApplication()).getRepository()
+//                .getWorkouts();
+//        mObservableWorkouts.setValue(workouts);
+    }
     /**
      * Expose the LiveData Workouts query so the UI can observe it.
      */
     public LiveData<List<WorkoutEntity>> getWorkouts() {
+
         return mObservableWorkouts;
     }
 }

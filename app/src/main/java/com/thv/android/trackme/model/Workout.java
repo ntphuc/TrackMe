@@ -26,6 +26,7 @@ import com.thv.android.trackme.db.dto.LocationDTO;
 public interface Workout {
     int getId();
     int getStatus();
+    String getDisplayStatus();
     LocationDTO getCurrentLocation();
     double getTotalDistance();
     double getAverageSpeed();

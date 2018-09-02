@@ -29,14 +29,12 @@ import android.support.annotation.VisibleForTesting;
 
 import com.thv.android.trackme.AppExecutors;
 import com.thv.android.trackme.db.converter.DateConverter;
-import com.thv.android.trackme.db.dao.CommentDao;
 import com.thv.android.trackme.db.dao.WorkoutDao;
-import com.thv.android.trackme.db.entity.CommentEntity;
 import com.thv.android.trackme.db.entity.WorkoutEntity;
 
 import java.util.List;
 
-@Database(entities = {WorkoutEntity.class, CommentEntity.class}, version = 1)
+@Database(entities = {WorkoutEntity.class}, version = 1, exportSchema = false)
 @TypeConverters(DateConverter.class)
 public abstract class AppDatabase extends RoomDatabase {
 
@@ -47,7 +45,6 @@ public abstract class AppDatabase extends RoomDatabase {
 
     public abstract WorkoutDao workoutDao();
 
-    public abstract CommentDao commentDao();
 
     private final MutableLiveData<Boolean> mIsDatabaseCreated = new MutableLiveData<>();
 
@@ -81,10 +78,9 @@ public abstract class AppDatabase extends RoomDatabase {
                             // Generate the data for pre-population
                             AppDatabase database = AppDatabase.getInstance(appContext, executors);
                             List<WorkoutEntity> workouts = DataGenerator.generateWorkouts();
-                            List<CommentEntity> comments =
-                                    DataGenerator.generateCommentsForWorkouts(workouts);
 
-                            insertData(database, workouts, comments);
+
+                            insertData(database, workouts);
                             // notify that the database was created and it's ready to be used
                             database.setDatabaseCreated();
                         });
@@ -105,11 +101,10 @@ public abstract class AppDatabase extends RoomDatabase {
         mIsDatabaseCreated.postValue(true);
     }
 
-    private static void insertData(final AppDatabase database, final List<WorkoutEntity> workouts,
-            final List<CommentEntity> comments) {
+    private static void insertData(final AppDatabase database, final List<WorkoutEntity> workouts) {
         database.runInTransaction(() -> {
             database.workoutDao().insertAll(workouts);
-            database.commentDao().insertAll(comments);
+
         });
     }
 

@@ -26,10 +26,7 @@ import android.support.annotation.NonNull;
 
 import com.thv.android.trackme.BasicApp;
 import com.thv.android.trackme.DataRepository;
-import com.thv.android.trackme.db.entity.CommentEntity;
 import com.thv.android.trackme.db.entity.WorkoutEntity;
-
-import java.util.List;
 
 public class WorkoutViewModel extends AndroidViewModel {
 

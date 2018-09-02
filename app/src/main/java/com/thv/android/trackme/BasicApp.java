@@ -28,6 +28,7 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 import com.thv.android.trackme.db.AppDatabase;
+import com.thv.android.trackme.utils.LogUtils;
 
 /**
  * Android Application class. Used for accessing singletons.
@@ -60,6 +61,7 @@ public class BasicApp extends Application {
     public void onCreate() {
         super.onCreate();
         appContext = getApplicationContext();
+        LogUtils.i(LogUtils.TAG_ROUTE_CREATE_SERVICE, "BasicApp onCreate appContext "+appContext);
         mAppExecutors = new AppExecutors();
         initImageLoader(getApplicationContext());
     }

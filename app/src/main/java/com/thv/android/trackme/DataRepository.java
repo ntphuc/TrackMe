@@ -6,7 +6,6 @@ import android.os.AsyncTask;
 
 import com.thv.android.trackme.db.AppDatabase;
 import com.thv.android.trackme.db.dao.WorkoutDao;
-import com.thv.android.trackme.db.entity.CommentEntity;
 import com.thv.android.trackme.db.entity.WorkoutEntity;
 import com.thv.android.trackme.listener.InsertCallbackListener;
 
@@ -63,9 +62,7 @@ public class DataRepository {
         return mDatabase.workoutDao().loadWorkout(workoutId);
     }
 
-    public LiveData<List<CommentEntity>> loadComments(final int workoutId) {
-        return mDatabase.commentDao().loadComments(workoutId);
-    }
+
 
     public void updateWordout(WorkoutEntity workout) {
 

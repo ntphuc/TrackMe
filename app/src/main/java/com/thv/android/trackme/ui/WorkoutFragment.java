@@ -31,12 +31,8 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.thv.android.trackme.BasicApp;
 import com.thv.android.trackme.R;
 import com.thv.android.trackme.databinding.WorkoutFragmentBinding;
-import com.thv.android.trackme.db.entity.CommentEntity;
 import com.thv.android.trackme.db.entity.WorkoutEntity;
-import com.thv.android.trackme.model.Comment;
 import com.thv.android.trackme.viewmodel.WorkoutViewModel;
-
-import java.util.List;
 
 public class WorkoutFragment extends Fragment {
 

@@ -49,10 +49,10 @@ import java.util.Iterator;
 @Entity(tableName = "workouts")
 public class WorkoutEntity implements Workout, Parcelable {
 
-    private final static int RECORDING = 0;
-    private final static int PAUSE = 1;
-    private final static int STOP = 2;
-    private final static int FINISHED = 3;
+    public final static int RECORDING = 0;
+    public final static int PAUSE = 1;
+    public final static int STOP = 2;
+    public final static int FINISHED = 3;
 
 
     @PrimaryKey(autoGenerate = true)
@@ -86,6 +86,25 @@ public class WorkoutEntity implements Workout, Parcelable {
 
     public void setStatus(int status) {
         this.status = status;
+    }
+    @Override
+    public String getDisplayStatus() {
+        String result="";
+        switch (status){
+            case RECORDING :
+                result = "RECORDING";
+                break;
+            case PAUSE :
+                result = "PAUSE";
+                break;
+            case STOP :
+                result = "STOP";
+                break;
+            case FINISHED :
+                result = "FINISHED";
+                break;
+        }
+        return result;
     }
 
     public ArrayDeque<LocationDTO> getLocations() {
@@ -153,17 +172,26 @@ public class WorkoutEntity implements Workout, Parcelable {
 //        return s.toString();
 //    }
     public String getImageUrl() {
-        StaticMap map = new StaticMap().zoom(15)
-                .size(960, 640);
+        if (locations.size()==0) return "";
+        StaticMap map = new StaticMap().zoom(20)
+                .size(1280, 960).type(StaticMap.Type.ROADMAP);
         map.key(BasicApp.getInstance().getAppContext().getResources().getString(R.string.google_maps_api_key));
                // .path(Path.Style.builder().color(Color.BLUE).build());
-        GeoPoint[] gp = new GeoPoint[locations.size()];
-        int i =0;
-        for (LocationDTO location : locations) {
-            gp[i]=new GeoPoint(location.getLatitude(), location.getLongitude());
-            i++;
-        }
-        Style style = Path.Style.builder().color(Color.BLUE).build();
+//        GeoPoint[] gp = new GeoPoint[locations.size()];
+//        int i =0;
+//        for (LocationDTO location : locations) {
+//            gp[i]=new GeoPoint(location.getLatitude(), location.getLongitude());
+//            i++;
+//        }
+
+
+        GeoPoint[] gp = new GeoPoint[2];
+        gp[0] = new GeoPoint(locations.getFirst().getLatitude(), locations.getFirst().getLongitude());
+        gp[1] = new GeoPoint(locations.getLast().getLatitude(), locations.getLast().getLongitude());
+
+        map.marker(gp);
+
+        Style style = Path.Style.builder().color(Color.RED).build();
         if (gp!=null && gp.length!=0)
 
              map.path(style,gp);
@@ -291,6 +319,12 @@ public class WorkoutEntity implements Workout, Parcelable {
             return new WorkoutEntity[size];
         }
     };
+
+    public void updateWorkout(WorkoutEntity workout) {
+        this.id = workout.getId();
+        this.status =workout.getStatus();
+        this.locations=workout.getLocations();
+    }
 
     class Statistics implements Serializable {
         // distance in total (in meters)

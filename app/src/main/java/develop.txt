@@ -7,3 +7,11 @@
 5. Create notification when service ongoing
 
 -> Check performance, battery, network. ?
+
+Requirement:
+1. Cac workout duoc luu lai history
+2. Chi co duy nhat mot workout duoc record
+3. Khi vao man hinh mainactivity neu co mot workout nao record thi navigate toi man hinh record do, ko thi vao man hinh list,
+4. Khi tao moi mot record thi tao mot new session, save stop old record
+5. Stop record , stop service
+6. Ve hinh static map 2 nut thoi
