@@ -177,19 +177,19 @@ public class WorkoutEntity implements Workout, Parcelable {
                 .size(1280, 960).type(StaticMap.Type.ROADMAP);
         map.key(BasicApp.getInstance().getAppContext().getResources().getString(R.string.google_maps_api_key));
                // .path(Path.Style.builder().color(Color.BLUE).build());
-//        GeoPoint[] gp = new GeoPoint[locations.size()];
-//        int i =0;
-//        for (LocationDTO location : locations) {
-//            gp[i]=new GeoPoint(location.getLatitude(), location.getLongitude());
-//            i++;
-//        }
+        GeoPoint[] gp = new GeoPoint[locations.size()];
+        int i =0;
+        for (LocationDTO location : locations) {
+            gp[i]=new GeoPoint(location.getLatitude(), location.getLongitude());
+            i++;
+        }
 
 
-        GeoPoint[] gp = new GeoPoint[2];
-        gp[0] = new GeoPoint(locations.getFirst().getLatitude(), locations.getFirst().getLongitude());
-        gp[1] = new GeoPoint(locations.getLast().getLatitude(), locations.getLast().getLongitude());
+        GeoPoint[] gp2 = new GeoPoint[2];
+        gp2[0] = new GeoPoint(locations.getFirst().getLatitude(), locations.getFirst().getLongitude());
+        gp2[1] = new GeoPoint(locations.getLast().getLatitude(), locations.getLast().getLongitude());
 
-        map.marker(gp);
+        map.marker(gp2);
 
         Style style = Path.Style.builder().color(Color.RED).build();
         if (gp!=null && gp.length!=0)
