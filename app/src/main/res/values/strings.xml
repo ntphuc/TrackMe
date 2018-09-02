@@ -45,7 +45,7 @@
     <string name="time_unit_days">d</string>
 
     <string name="workout_id">WorkoutID = %1$d | Status = %2$s</string>
-    <string name="total_distance_display">Distance:\n %1$.2f km</string>
+    <string name="total_distance_display">Distance:\n %1$s</string>
     <string name="avg_speed_display">Avg speed:\n %1$.2f km/h</string>
     <string name="duration_display">Duration:\n %1$s</string>
     <!-- toolbar and related dialogs -->
@@ -67,4 +67,5 @@
     <string name="YES">Yes</string>
     <string name="NO">No</string>
     <string name="create_new_workout">Create new workout</string>
+    <string name="workout_is_recoding">Workout is being monitored !</string>
 </resources>

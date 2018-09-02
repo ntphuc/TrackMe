@@ -48,6 +48,8 @@ import com.google.maps.android.PolyUtil;
 import com.liefery.android.icon_badge.IconBadge;
 import com.liefery.android.waypoint_map_view.FreeWaypointMap;
 import com.liefery.android.waypoint_map_view.WaypointMap;
+import com.thv.android.trackme.BasicApp;
+import com.thv.android.trackme.DataRepository;
 import com.thv.android.trackme.R;
 import com.thv.android.trackme.common.Constanst;
 import com.thv.android.trackme.databinding.RecordedWorkoutFragmentBinding;
@@ -334,7 +336,14 @@ public class RecordedWorkoutFragment extends Fragment implements OnMapReadyCallb
     public void onStop() {
         super.onStop();
         mMapView.onStop();
+       // saveState();
 
+    }
+
+    private void saveState() {
+        DataRepository db = BasicApp.getInstance().getRepository();
+        if (db != null)
+            db.updateWordout(model.getObservableWorkout().getValue());
     }
 
     @Override

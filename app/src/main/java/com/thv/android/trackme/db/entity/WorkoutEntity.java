@@ -106,7 +106,10 @@ public class WorkoutEntity implements Workout, Parcelable {
         }
         return result;
     }
-
+    @Override
+    public boolean getIsFinished() {
+        return status==FINISHED;
+    }
     public ArrayDeque<LocationDTO> getLocations() {
         return locations;
     }
@@ -121,8 +124,9 @@ public class WorkoutEntity implements Workout, Parcelable {
     }
 
     @Override
-    public double getTotalDistance() {
-        return getStatistics().distanceTotal;
+    public String getTotalDistance() {
+        return DateConverter.humanReadableDistance(BasicApp.getInstance().getAppContext(),
+                getStatistics().distanceTotal, 1);
     }
 
     @Override

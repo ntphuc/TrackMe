@@ -32,7 +32,6 @@
         android:orientation="horizontal"
         android:layout_marginStart="@dimen/item_horizontal_margin"
         android:layout_marginEnd="@dimen/item_horizontal_margin"
-
         app:cardUseCompatPadding="true">
 
         <RelativeLayout
@@ -48,6 +47,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
                 android:layout_centerHorizontal="true"
+                android:textColor="@{workout.isFinished?@color/text_default:@color/red}"
                 android:text="@{@string/workout_id(workout.id,workout.displayStatus)}"/>
 
             <ImageView

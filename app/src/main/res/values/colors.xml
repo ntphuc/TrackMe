@@ -21,7 +21,8 @@
     <color name="colorAccent">#FF4081</color>
 
     <color name="comment_light_background">#d6d6d6</color>
-
+    <color name="text_default">#808080</color>
+    <color name="black">#000000</color>
     <color name="orange">#FDBB1C</color>
     <color name="green">#1cfdbb</color>
     <color name="red">#fd4b1c</color>

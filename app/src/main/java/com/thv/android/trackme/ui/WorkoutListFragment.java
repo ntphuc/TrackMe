@@ -40,6 +40,7 @@ import com.thv.android.trackme.listener.WorkoutClickCallback;
 import com.thv.android.trackme.model.Workout;
 import com.thv.android.trackme.service.TrackingService;
 import com.thv.android.trackme.utils.LogUtils;
+import com.thv.android.trackme.utils.NotificationHelper;
 import com.thv.android.trackme.viewmodel.WorkoutListViewModel;
 import com.thv.android.trackme.listener.WorkoutClickCallback;
 
@@ -79,8 +80,21 @@ public class WorkoutListFragment extends Fragment {
     }
 
     @Override
+    public void onStop() {
+        super.onStop();
+
+    }
+
+
+
+    @Override
     public void onResume() {
         super.onResume();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
     }
 
     private void subscribeUi(WorkoutListViewModel viewModel) {
@@ -148,5 +162,16 @@ public class WorkoutListFragment extends Fragment {
             }
         }
         mWorkoutAdapter.notifyDataSetChanged();
+    }
+
+    public void showNotification() {
+        // create new notification
+        for (WorkoutEntity workout:viewModel.getWorkouts().getValue()) {
+            if (workout.getStatus() != WorkoutEntity.FINISHED) {
+                NotificationHelper helper = new NotificationHelper(this.getActivity());
+                helper.createNotification(this.getString(R.string.app_name), this.getString(R.string.workout_is_recoding));
+                break;
+            }
+        }
     }
 }

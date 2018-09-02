@@ -36,6 +36,7 @@ import com.thv.android.trackme.db.dto.LocationDTO;
 import com.thv.android.trackme.db.entity.WorkoutEntity;
 import com.thv.android.trackme.listener.InsertCallbackListener;
 import com.thv.android.trackme.utils.LogUtils;
+import com.thv.android.trackme.utils.NotificationHelper;
 import com.thv.android.trackme.utils.PreferenceUtils;
 import com.thv.android.trackme.viewmodel.RecordedWorkoutViewModel;
 
@@ -160,7 +161,7 @@ public class TrackingService extends Service implements LocationListener, Insert
             // update old workout
             LiveData<List<WorkoutEntity>> listWorkout= BasicApp.getInstance().getRepository().getWorkouts();
             for (WorkoutEntity workout:listWorkout.getValue()) {
-                if (workout.getStatus()==WorkoutEntity.RECORDING){
+                if (workout.getStatus()!=WorkoutEntity.FINISHED){
                     LogUtils.i(LogUtils.TAG_ROUTE_CREATE_SERVICE, "TrackingService update workout id =" +workout.getId());
 
                     workout.setStatus(WorkoutEntity.FINISHED);

@@ -92,6 +92,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+
+        // create new notification if app not visible
+        FragmentManager fm = getSupportFragmentManager();
+        Fragment listFragment = fm.findFragmentByTag(WorkoutListFragment.class.getSimpleName());
+        if (listFragment!=null && listFragment instanceof WorkoutListFragment ){
+            ((WorkoutListFragment)listFragment).showNotification();
+        }
+    }
+
+    @Override
     protected void onUserLeaveHint() {
 
         super.onUserLeaveHint();
